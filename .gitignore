@@ -1,0 +1,63 @@
+# Ignore Visual Studio-specific files
+.vs/
+*.user
+*.suo
+*.vscode/
+
+# Ignore build output
+bin/
+obj/
+out/
+*.exe
+*.dll
+*.pdb
+*.app/
+*.ipa/
+*.iobj/
+*.ipdb/
+
+# Ignore Rider / JetBrains
+.idea/
+*.sln.iml
+
+# Ignore NuGet packages
+*.nupkg
+packages/
+project.lock.json
+package-lock.json
+*.nuspec
+
+# Ignore user-specific files
+*.user
+*.rsuser
+*.suo
+*.psess
+*.pfx
+*.p12
+*.snk
+*.dotCover
+*.sln.docstates
+
+# Ignore logs and database
+logs/
+*.log
+*.tlog
+*.sqllite
+*.mdf
+*.ldf
+
+# Ignore test output
+TestResults/
+coverage/
+*.coverage
+*.coveragexml
+*.codecoverage
+
+# Ignore temporary files
+*.tmp
+*.temp
+*.cache
+*.obj
+*.log
+*.csproj.user
+*.csproj.dotSettings
