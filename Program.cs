@@ -34,5 +34,26 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+// The following endpoint is using LINQ methods that can be chained to db.Campsites. EF Core is turning this method chain
+// into a SQL query (SELECT col1, col2,... FROM TableName) and then turning the tabular data that comes back from the db
+// into .NET objects.
+// ASP.NET is serializing (the process of converting .NET objects into a format that can be transmitted
+// and understood by other systems) those .NET objects into JSON to send back to the client.
+// Also, the endpoint provides access to the DbContext for our db by adding another param to the handler. This is a basic form
+// of dependency injection, where EF Core sees a dependency that the handler requires, and passes in an instance of it as an 
+// arg so that the handler can use it.
+app.MapGet("/api/campsites", (CreekRiverDbContext db) => db.Campsites.ToList());
+
+app.MapGet("/api/campsites/{id}", (CreekRiverDbContext db, int id) =>
+{
+    // Include adds a SQL JOIN in the underlying SQL query to the CampsiteTypes table.
+    var campsite = db.Campsites.Include(c => c.CampsiteType).SingleOrDefault(c => c.Id == id);
+    if (campsite == null)
+    {
+        return Results.NotFound();
+    }
+    return Results.Ok(campsite);
+});
+
 app.UseHttpsRedirection();
 app.Run();
