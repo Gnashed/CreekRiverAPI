@@ -34,6 +34,10 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+/*
+ * ================================================ ENDPOINTS ================================================
+ */
+
 // The following endpoint is using LINQ methods that can be chained to db.Campsites. EF Core is turning this method chain
 // into a SQL query (SELECT col1, col2,... FROM TableName) and then turning the tabular data that comes back from the db
 // into .NET objects.
