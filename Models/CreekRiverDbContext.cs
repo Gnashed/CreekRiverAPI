@@ -120,5 +120,39 @@ public class CreekRiverDbContext : DbContext
                 ImageUrl = "https://tnstateparks.com/assets/images/content-images/campgrounds/279/wpsp-a5-4.jpg"
             }
         });
+
+        modelBuilder.Entity<UserProfile>().HasData(new UserProfile[]
+        {
+            new UserProfile
+            {
+                Id = 1,
+                FirstName = "Tion",
+                LastName = "Blackmon",
+                Email = "tion.blackmon@email.com",
+            },
+            new UserProfile
+            {
+                Id = 2,
+                FirstName = "Bol",
+                LastName = "Bol",
+                Email = "bolbol_phoenixsuns-@nba.com",
+            }
+        });
+        
+        modelBuilder.Entity<Reservation>().HasData(new Reservation[]
+        {
+            new Reservation
+            {
+                Id = 1,
+                UserProfileId = 1,
+                CampsiteId = 7, // Warriors' Path
+            },
+            new Reservation
+            {
+                Id = 2,
+                UserProfileId = 2,
+                CampsiteId = 3, // Cumberland Mountain
+            }
+        });
     }
 }
