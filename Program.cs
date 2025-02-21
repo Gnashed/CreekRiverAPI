@@ -7,7 +7,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 #region These three statements are important to have. Provided comments explaining each statement's purpose.
 // The following statements makes an instance of the CreekRiverDbContext class available to our endpoints so they can 
@@ -31,7 +33,11 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+    });
 }
 
 /*
@@ -60,4 +66,6 @@ app.MapGet("/api/campsites/{id}", (CreekRiverDbContext db, int id) =>
 });
 
 app.UseHttpsRedirection();
+app.UseAuthorization();
+app.MapControllers();
 app.Run();
