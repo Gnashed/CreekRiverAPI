@@ -1,4 +1,6 @@
 // This class file is able to access the PostgreSQL database and seed the database with data.
+// This is the primary class that manages database connections and operations. It is the bridge b/w our C# app and the DB.
+// It handles querying, saving, and transaction management.
 
 using Microsoft.EntityFrameworkCore;
 using CreekRiver.Models;
