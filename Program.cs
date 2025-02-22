@@ -7,7 +7,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 #region These three statements are important to have. Provided comments explaining each statement's purpose.
 // The following statements makes an instance of the CreekRiverDbContext class available to our endpoints so they can 
@@ -31,8 +33,16 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+    });
 }
+
+/*
+ * ================================================ ENDPOINTS ================================================
+ */
 
 // The following endpoint is using LINQ methods that can be chained to db.Campsites. EF Core is turning this method chain
 // into a SQL query (SELECT col1, col2,... FROM TableName) and then turning the tabular data that comes back from the db
@@ -43,7 +53,6 @@ if (app.Environment.IsDevelopment())
 // of dependency injection, where EF Core sees a dependency that the handler requires, and passes in an instance of it as an 
 // arg so that the handler can use it.
 app.MapGet("/api/campsites", (CreekRiverDbContext db) => db.Campsites.ToList());
-
 app.MapGet("/api/campsites/{id}", (CreekRiverDbContext db, int id) =>
 {
     // Include adds a SQL JOIN in the underlying SQL query to the CampsiteTypes table.
@@ -55,5 +64,14 @@ app.MapGet("/api/campsites/{id}", (CreekRiverDbContext db, int id) =>
     return Results.Ok(campsite);
 });
 
+app.MapPost("/api/campsites", (CreekRiverDbContext db, Campsite campsite) =>
+{
+    db.Campsites.Add(campsite);
+    db.SaveChanges(); // Inherited in CreekRiverDbContext from the DbContext class. This sends the change to the DB.
+    return Results.Created($"/api/campsite/{campsite.Id}", campsite); // Method creates a 201 response (resource created).
+});
+
 app.UseHttpsRedirection();
+app.UseAuthorization();
+app.MapControllers();
 app.Run();
