@@ -53,7 +53,6 @@ if (app.Environment.IsDevelopment())
 // of dependency injection, where EF Core sees a dependency that the handler requires, and passes in an instance of it as an 
 // arg so that the handler can use it.
 app.MapGet("/api/campsites", (CreekRiverDbContext db) => db.Campsites.ToList());
-
 app.MapGet("/api/campsites/{id}", (CreekRiverDbContext db, int id) =>
 {
     // Include adds a SQL JOIN in the underlying SQL query to the CampsiteTypes table.
@@ -63,6 +62,13 @@ app.MapGet("/api/campsites/{id}", (CreekRiverDbContext db, int id) =>
         return Results.NotFound();
     }
     return Results.Ok(campsite);
+});
+
+app.MapPost("/api/campsites", (CreekRiverDbContext db, Campsite campsite) =>
+{
+    db.Campsites.Add(campsite);
+    db.SaveChanges(); // Inherited in CreekRiverDbContext from the DbContext class. This sends the change to the DB.
+    return Results.Created($"/api/campsite/{campsite.Id}", campsite); // Method creates a 201 response (resource created).
 });
 
 app.UseHttpsRedirection();
