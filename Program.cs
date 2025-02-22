@@ -71,6 +71,21 @@ app.MapPost("/api/campsites", (CreekRiverDbContext db, Campsite campsite) =>
     return Results.Created($"/api/campsite/{campsite.Id}", campsite); // Method creates a 201 response (resource created).
 });
 
+app.MapPut("/api/campsites/{id}", (CreekRiverDbContext db, int id, Campsite campsite) =>
+{
+    Campsite campsitePayload = db.Campsites.SingleOrDefault(c => c.Id == id);
+    if (campsitePayload == null)
+    {
+        return Results.NotFound();
+    }
+    campsitePayload.Nickname = campsite.Nickname;
+    campsitePayload.CampsiteTypeId = campsite.CampsiteTypeId;
+    campsitePayload.ImageUrl = campsite.ImageUrl;
+
+    db.SaveChanges();
+    return Results.NoContent(); // Success message is all that is needed when returning a response back to the client. 
+});
+
 app.MapDelete("/api/campsites/{id}", (CreekRiverDbContext db, int id) =>
 {
     Campsite campsite = db.Campsites.SingleOrDefault(c => c.Id == id);
