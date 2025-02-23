@@ -146,14 +146,18 @@ public class CreekRiverDbContext : DbContext
             new Reservation
             {
                 Id = 1,
-                UserProfileId = 1,
+                UserProfileId = 1, // Tion Blackmon
                 CampsiteId = 7, // Warriors' Path
+                CheckinDate = new DateTime(2024, 6, 13),
+                CheckoutDate = new DateTime(2024, 6, 20),
             },
             new Reservation
             {
                 Id = 2,
-                UserProfileId = 2,
+                UserProfileId = 2, // Bol Bol
                 CampsiteId = 3, // Cumberland Mountain
+                CheckinDate = new DateTime(2024, 8, 24),
+                CheckoutDate = new DateTime(2024, 8, 26),
             }
         });
     }

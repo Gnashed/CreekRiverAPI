@@ -118,6 +118,10 @@ app.MapGet("/api/reservations", (CreekRiverDbContext db) =>
         .ThenInclude(c => c.CampsiteType) // Goes into Campsite to get the related CampsiteType.
         .OrderBy(res => res.CheckinDate)
         .ToList();
+    // Try the endpoint out. You will notice that if a campsite has reservations associated with it, EF Core will also
+    // populate the reservation data for those campsites nested in the reservations property. This is ok, and is called
+    // "navigation property fix-up". For the most part, you can ignore this extra data, but occasionally you might find
+    // it useful.
 });
 
 app.UseHttpsRedirection();
