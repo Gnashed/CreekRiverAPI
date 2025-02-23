@@ -105,6 +105,7 @@ app.MapDelete("/api/campsites/{id}", (CreekRiverDbContext db, int id) =>
 });
 #endregion
 
+#region Endpoints for /reservations
 // Getting Reservations with Related Data
 app.MapGet("/api/reservations", (CreekRiverDbContext db) =>
 {
@@ -118,7 +119,45 @@ app.MapGet("/api/reservations", (CreekRiverDbContext db) =>
         .ThenInclude(c => c.CampsiteType) // Goes into Campsite to get the related CampsiteType.
         .OrderBy(res => res.CheckinDate)
         .ToList();
+    // Try the endpoint out. You will notice that if a campsite has reservations associated with it, EF Core will also
+    // populate the reservation data for those campsites nested in the reservations property. This is ok, and is called
+    // "navigation property fix-up". For the most part, you can ignore this extra data, but occasionally you might find
+    // it useful.
 });
+
+app.MapPost("/api/reservations", (CreekRiverDbContext db, Reservation reservationPayload) =>
+{
+    try
+    {
+        if (reservationPayload.CheckinDate < DateTime.Now)
+        {
+            return Results.BadRequest("Please check in a future date.");
+        }
+        if (reservationPayload.CheckoutDate < DateTime.Now)
+        {
+            return Results.BadRequest("Please check in a future date.");
+        }
+        db.Reservations.Add(reservationPayload);
+        db.SaveChanges();
+        return Results.Created($"/api/reservations/{reservationPayload.Id}", reservationPayload);
+    }
+    catch (DbUpdateException)
+    {
+        return Results.BadRequest("Invalid data submitted.");
+    }
+});
+
+// DELETE Reservation
+app.MapDelete("/api/reservations/cancel/{id}", (CreekRiverDbContext db, int id) =>
+{
+    Reservation? reservation = db.Reservations.SingleOrDefault(r => r.Id == id);
+    db.Reservations.Remove(reservation);
+    db.SaveChanges();
+    Console.WriteLine($"Reservation for {nameof(reservation.Campsite)} is now cancelled.");
+    return Results.NoContent();
+});
+
+#endregion
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
