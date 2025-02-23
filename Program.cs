@@ -124,6 +124,28 @@ app.MapGet("/api/reservations", (CreekRiverDbContext db) =>
     // it useful.
 });
 
+app.MapPost("/api/reservations", (CreekRiverDbContext db, Reservation reservationPayload) =>
+{
+    try
+    {
+        if (reservationPayload.CheckinDate < DateTime.Now)
+        {
+            return Results.BadRequest("Please check in a future date.");
+        }
+        if (reservationPayload.CheckoutDate < DateTime.Now)
+        {
+            return Results.BadRequest("Please check in a future date.");
+        }
+        db.Reservations.Add(reservationPayload);
+        db.SaveChanges();
+        return Results.Created($"/api/reservations/{reservationPayload.Id}", reservationPayload);
+    }
+    catch (DbUpdateException)
+    {
+        return Results.BadRequest("Invalid data submitted.");
+    }
+});
+
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
