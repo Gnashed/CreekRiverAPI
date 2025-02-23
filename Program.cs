@@ -52,6 +52,8 @@ if (app.Environment.IsDevelopment())
 // Also, the endpoint provides access to the DbContext for our db by adding another param to the handler. This is a basic form
 // of dependency injection, where EF Core sees a dependency that the handler requires, and passes in an instance of it as an 
 // arg so that the handler can use it.
+
+#region GET Endpoints for /api/campsite
 app.MapGet("/api/campsites", (CreekRiverDbContext db) => db.Campsites.ToList());
 app.MapGet("/api/campsites/{id}", (CreekRiverDbContext db, int id) =>
 {
@@ -63,7 +65,9 @@ app.MapGet("/api/campsites/{id}", (CreekRiverDbContext db, int id) =>
     }
     return Results.Ok(campsite);
 });
+#endregion
 
+#region POST and PUT Endpoints for /api/campsite
 app.MapPost("/api/campsites", (CreekRiverDbContext db, Campsite campsite) =>
 {
     db.Campsites.Add(campsite);
@@ -85,7 +89,9 @@ app.MapPut("/api/campsites/{id}", (CreekRiverDbContext db, int id, Campsite camp
     db.SaveChanges();
     return Results.NoContent(); // Success message is all that is needed when returning a response back to the client. 
 });
+#endregion
 
+#region All DELETE endpoints
 app.MapDelete("/api/campsites/{id}", (CreekRiverDbContext db, int id) =>
 {
     Campsite campsite = db.Campsites.SingleOrDefault(c => c.Id == id);
@@ -96,6 +102,22 @@ app.MapDelete("/api/campsites/{id}", (CreekRiverDbContext db, int id) =>
     db.Campsites.Remove(campsite);
     db.SaveChanges();
     return Results.NoContent();
+});
+#endregion
+
+// Getting Reservations with Related Data
+app.MapGet("/api/reservations", (CreekRiverDbContext db) =>
+{
+    // Each of these method chains can be thought of as an SQL query.
+    return db.Reservations
+        .Include(r => r.UserProfile) // This will JOIN the UserProfiles table.
+        .Include(r => r.Campsite) // Will further JOIN the Campsite table.
+        // Use .ThenInclude when you want to JOIN to a table that is not the original table meaning, in this scenario,
+        // you can only get to CampsiteType from Campsites, not the original Reservations table. We're adding CampsiteTypes
+        // data to the Campsites data right after the Include call to JOIN campsites.
+        .ThenInclude(c => c.CampsiteType) // Goes into Campsite to get the related CampsiteType.
+        .OrderBy(res => res.CheckinDate)
+        .ToList();
 });
 
 app.UseHttpsRedirection();
