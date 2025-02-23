@@ -147,7 +147,7 @@ public class CreekRiverDbContext : DbContext
             {
                 Id = 1,
                 UserProfileId = 1, // Tion Blackmon
-                CampsiteId = 7, // Warriors' Path
+                CampsiteId = 7, // Warriors' Path,
                 CheckinDate = new DateTime(2024, 6, 13),
                 CheckoutDate = new DateTime(2024, 6, 20),
             },

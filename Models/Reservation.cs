@@ -11,4 +11,25 @@ public class Reservation
     public UserProfile UserProfile { get; set; }
     public DateTime CheckinDate { get; set; }
     public DateTime CheckoutDate { get; set; }
+    // TotalNights won't correspond to a column in the DB. ASP.NET will evaluate the calculated properties and add 
+    // them to the JSON. This is also equivalent to defining a getter, meaning this property allows it to be read-only,
+    // which is great for when doing calculations.
+    public int TotalNights => (CheckoutDate - CheckinDate).Days;
+    // This class member is called a field. get and set are omitted since this is not a property, but a member.
+    // private is another access modifier that prevents this field from being accessed outside the code that is contained
+    // in the class. It will be ignored in the JSON and won't appear in the HTTP responses.
+    // static means that the value for this field will be shared across all instances of Reservation.
+    // By convention, private fields are prepended with an underscore (_).
+    private static readonly decimal _reservationBaseFee = 10M;
+    public decimal? TotalCost
+    {
+        get
+        {
+            if (Campsite?.CampsiteType != null)
+            {
+                return Campsite.CampsiteType.FeePerNight * TotalNights + _reservationBaseFee;
+            }
+            return null;
+        }
+    }
 }
