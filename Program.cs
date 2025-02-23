@@ -105,6 +105,7 @@ app.MapDelete("/api/campsites/{id}", (CreekRiverDbContext db, int id) =>
 });
 #endregion
 
+#region Endpoints for /reservations
 // Getting Reservations with Related Data
 app.MapGet("/api/reservations", (CreekRiverDbContext db) =>
 {
@@ -145,6 +146,18 @@ app.MapPost("/api/reservations", (CreekRiverDbContext db, Reservation reservatio
         return Results.BadRequest("Invalid data submitted.");
     }
 });
+
+// DELETE Reservation
+app.MapDelete("/api/reservations/cancel/{id}", (CreekRiverDbContext db, int id) =>
+{
+    Reservation? reservation = db.Reservations.SingleOrDefault(r => r.Id == id);
+    db.Reservations.Remove(reservation);
+    db.SaveChanges();
+    Console.WriteLine($"Reservation for {nameof(reservation.Campsite)} is now cancelled.");
+    return Results.NoContent();
+});
+
+#endregion
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
